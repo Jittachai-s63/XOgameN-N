@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { useState } from "react";
 
 function Square(props) {
   return (
@@ -52,7 +51,7 @@ class Board extends React.Component {
     return(
       <div>
         <div>
-          { this.renderrow(4) }
+          { this.renderrow(this.props.sizexo) }
         </div>
       </div>
     );
@@ -60,26 +59,6 @@ class Board extends React.Component {
   
 }
 
-function MyForm() {
-  const [n, setName] = useState("");
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    alert(`n*n ${n}`);
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>Enter your name:
-        <input 
-          type="number" 
-          value={n}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <input type="submit" />
-    </form>
-  )
-}
 
 class Game extends React.Component {
 
@@ -95,7 +74,16 @@ class Game extends React.Component {
       xIsNext: true,
       sizexo: 3
     };
+
+    this.handleChange = this.handleChange.bind(this);
   }
+
+  handleChange(event) {
+    this.setState({
+      sizexo: event.target.value
+    });
+  }
+
 
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -123,22 +111,10 @@ class Game extends React.Component {
     });
   }
 
-  handleChange(event) {
-    this.setState({
-      sizexo: event.target.value
-    });
-  }
-
-  handleSubmit(event) {
-    this.setState({
-      sizexo: event.target.value
-    });
-  }
-
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const winner = calculateWinner(current.squares,this.state.sizexo);
 
     const moves = history.map((step, move) => {
       const desc = move ?
@@ -161,21 +137,18 @@ class Game extends React.Component {
     return (
       <div>
 
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Name: {this.state.sizexo} 
-          <input type="number" onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>  
-        
+      <label>
+        Size : 
+        <input type="number" value={this.state.sizexo} onChange={this.handleChange} />
+      </label>
+
       <div className="game">
         <div className="game-board">
         <br></br>
           <Board
             squares={current.squares}
             onClick={i => this.handleClick(i)}
-            sizexo={current.sizexo}
+            sizexo={this.state.sizexo}
           />
         </div>
         <div className="game-info">
