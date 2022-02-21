@@ -72,7 +72,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
-      sizexo: 3
+      sizexo: 3,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -80,16 +80,22 @@ class Game extends React.Component {
 
   handleChange(event) {
     this.setState({
+      history: [
+        {
+          squares: Array(event.target.value*event.target.value).fill(null)
+        }
+      ],
+      stepNumber: 0,
+      xIsNext: true,
       sizexo: event.target.value
     });
   }
-
 
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares,this.state.sizexo) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
@@ -115,7 +121,7 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares,this.state.sizexo);
-
+    
     const moves = history.map((step, move) => {
       const desc = move ?
         'Go to move #' + move :
@@ -163,22 +169,55 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+function calculateWinner(squares,sizexo) {
+
+  const lines = [];
+  var n = parseInt(sizexo);
+
+  for(let i = 0 ; i<n ; i++){
+    const row = [];
+    for(let j = i*n ; j < n*(i+1);j++)
+    {
+      row.push(j);
     }
+    lines.push(row);
+  }
+
+  for(let i = 0 ; i<n ; i++){
+    const row = [];
+    for(let j = i ; j <= (n*(n-1))+i ; j+=n){
+      row.push(j);
+    }
+    lines.push(row)
+  }
+
+  const temp = [];
+  for(let j = 0 ; j < n*n ; j += (n+1) ){
+    temp.push(j);
+  }
+  lines.push(temp);
+
+  const temp1 = [];
+  for(let j = n-1 ; j <= n*(n-1) ; j += (n-1) ){
+    temp1.push(j);
+  }
+  lines.push(temp1);
+
+
+  var count = 0;
+  for (let i = 0; i < lines.length; i++) {
+
+    const check = Array.from(lines[i]) ;
+    
+    for(let j = 0; j < n-1 ; j++){
+      if( squares[ check[j] ] && squares[ check[j] ] === squares[ check[j+1] ] ){
+        count++;
+      }
+      if(count == n-1){
+        return squares[check[j]] ;
+      }
+    }
+    count = 0;
   }
   return null;
 }
