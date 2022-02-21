@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { useState } from "react";
 
 function Square(props) {
   return (
@@ -11,60 +12,77 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-
-
-  test1() {
-    for(var i = 0 ; i < 3 ; i++){
-      return(
-        <div className="board-row">
-          {this.test2()}
-        </div>
-      );
-    }
-  }
-
-  test2(){
-    for(var i = 0 ; i < 3 ; i++){
-      return(
-        this.renderSquare(i)
-      );
-    }
-
-  }
-
+  
   renderSquare(i) {
     return (
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        key={i}
       />
+    );
+  }
+
+  rendercolumn(n,st){
+    const column = []
+
+    for(var i = st*n ; i < n*(1+st) ; i++){
+      column.push(this.renderSquare(i)) 
+    }
+
+    return(
+      column
+    );
+
+  }
+
+  renderrow(n) {
+    const row = []
+
+    for(var i = 0 ; i < n ; i++){
+      row.push( <div className="board-row"> {this.rendercolumn(n,i) }</div> )
+    }
+
+    return(
+      row
     );
   }
 
   render() {
     return(
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
+        <div>
+          { this.renderrow(4) }
         </div>
       </div>
     );
   }
+  
+}
+
+function MyForm() {
+  const [n, setName] = useState("");
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert(`n*n ${n}`);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>Enter your name:
+        <input 
+          type="number" 
+          value={n}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </label>
+      <input type="submit" />
+    </form>
+  )
 }
 
 class Game extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -150,15 +168,14 @@ class Game extends React.Component {
         </label>
         <input type="submit" value="Submit" />
       </form>  
-  
-
+        
       <div className="game">
         <div className="game-board">
-          <br></br>
+        <br></br>
           <Board
             squares={current.squares}
-            sizexo={current.sizexo}
             onClick={i => this.handleClick(i)}
+            sizexo={current.sizexo}
           />
         </div>
         <div className="game-info">
