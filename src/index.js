@@ -11,6 +11,27 @@ function Square(props) {
 }
 
 class Board extends React.Component {
+
+
+  test1() {
+    for(var i = 0 ; i < 3 ; i++){
+      return(
+        <div className="board-row">
+          {this.test2()}
+        </div>
+      );
+    }
+  }
+
+  test2(){
+    for(var i = 0 ; i < 3 ; i++){
+      return(
+        this.renderSquare(i)
+      );
+    }
+
+  }
+
   renderSquare(i) {
     return (
       <Square
@@ -21,7 +42,7 @@ class Board extends React.Component {
   }
 
   render() {
-    return (
+    return(
       <div>
         <div className="board-row">
           {this.renderSquare(0)}
@@ -53,7 +74,8 @@ class Game extends React.Component {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      sizexo: 3
     };
   }
 
@@ -83,6 +105,18 @@ class Game extends React.Component {
     });
   }
 
+  handleChange(event) {
+    this.setState({
+      sizexo: event.target.value
+    });
+  }
+
+  handleSubmit(event) {
+    this.setState({
+      sizexo: event.target.value
+    });
+  }
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
@@ -107,10 +141,23 @@ class Game extends React.Component {
     }
 
     return (
+      <div>
+
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name: {this.state.sizexo} 
+          <input type="number" onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>  
+  
+
       <div className="game">
         <div className="game-board">
+          <br></br>
           <Board
             squares={current.squares}
+            sizexo={current.sizexo}
             onClick={i => this.handleClick(i)}
           />
         </div>
@@ -118,6 +165,7 @@ class Game extends React.Component {
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
+      </div>
       </div>
     );
   }
